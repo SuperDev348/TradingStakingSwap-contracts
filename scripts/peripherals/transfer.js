@@ -3,7 +3,7 @@ const { expandDecimals } = require("../../test/shared/utilities")
 
 async function main() {
   const signer = await getFrameSigner()
-  const receiver = "0x5F799f365Fa8A2B60ac0429C48B153cA5a6f0Cf8"
+  const receiver = "0x937B52690883994B0549b6a3093356b83a1F59a0"
 
   const tokenAddress = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8"
   const tokenDecimals = 6

@@ -2,7 +2,7 @@ const { deployContract, contractAt, writeTmpAddresses, sendTxn } = require("../s
 
 async function main() {
   // const wallet = { address: "0xaD8987f5a71D22BD14F1c842D1f431eeDa83Fc4B" }
-  const wallet = { address: "0x5F799f365Fa8A2B60ac0429C48B153cA5a6f0Cf8" }
+  const wallet = { address: "0x937B52690883994B0549b6a3093356b83a1F59a0" }
   const nft = await contractAt("ERC721", "0xC36442b4a4522E871399CD717aBDD847Ab11FE88")
   const nftId = 25921
   const tokenManager = await contractAt("TokenManager", "0x4E29d2ee6973E5Bd093df40ef9d0B28BD56C9e4E")

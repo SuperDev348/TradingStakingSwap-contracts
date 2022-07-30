@@ -67,7 +67,7 @@ async function withdrawFeesAvax() {
   const signer = await getFrameSigner()
 
   const receiver = { address: "0x49B373D422BdA4C6BfCdd5eC1E48A9a26fdA2F8b" }
-  const vault = await contractAt("Vault", "0x9ab2De34A33fB459b538c43f251eB825645e8595")
+  const vault = await contractAt("Vault", "0x050C08cdeEc2e081Eb0Bf5181AAA4D8FfC18A38f")
   const gov = await contractAt("Timelock", await vault.gov(), signer)
   const { avax, btc, eth, mim, usdce, usdc } = tokens
 

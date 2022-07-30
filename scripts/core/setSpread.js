@@ -17,7 +17,7 @@ async function getArbValues(signer) {
 }
 
 async function getAvaxValues(signer) {
-  const vault = await contractAt("Vault", "0x9ab2De34A33fB459b538c43f251eB825645e8595")
+  const vault = await contractAt("Vault", "0x050C08cdeEc2e081Eb0Bf5181AAA4D8FfC18A38f")
   const vaultPriceFeed = await contractAt("VaultPriceFeed", await vault.priceFeed())
   // const vaultPriceFeed = await contractAt("VaultPriceFeed", "0x81b7e71A1D9E08a6Ca016A0F4D6Fa50DBCE89Ee3")
   const timelock = await contractAt("Timelock", await vaultPriceFeed.gov(), signer)

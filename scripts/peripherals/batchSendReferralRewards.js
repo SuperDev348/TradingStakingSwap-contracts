@@ -9,7 +9,7 @@ const tokens = require('../core/tokens')[network];
 
 const ethPrice = "1815"
 const avaxPrice = "25"
-const gmxPrice = "20"
+const opecPrice = "20"
 
 const shouldSendTxn = false
 
@@ -17,22 +17,22 @@ const { AddressZero } = ethers.constants
 
 async function getArbValues() {
   const batchSender = await contractAt("BatchSender", "0x1070f775e8eb466154BBa8FA0076C4Adc7FE17e8")
-  const esGmx = await contractAt("Token", "0xf42Ae1D54fd613C9bb14810b0588FaAa09a426cA")
+  const esOpec = await contractAt("Token", "0xf42Ae1D54fd613C9bb14810b0588FaAa09a426cA")
   const nativeTokenPrice = ethPrice
   const data = arbitrumData
   const gasLimit = "30000000"
 
-  return { batchSender, esGmx, nativeTokenPrice, data, gasLimit }
+  return { batchSender, esOpec, nativeTokenPrice, data, gasLimit }
 }
 
 async function getAvaxValues() {
   const batchSender = await contractAt("BatchSender", "0xF0f929162751DD723fBa5b86A9B3C88Dc1D4957b")
-  const esGmx = await contractAt("Token", "0xFf1489227BbAAC61a9209A08929E4c2a526DdD17")
+  const esOpec = await contractAt("Token", "0xFf1489227BbAAC61a9209A08929E4c2a526DdD17")
   const nativeTokenPrice = avaxPrice
   const data = avaxData
   const gasLimit = "5000000"
 
-  return { batchSender, esGmx, nativeTokenPrice, data, gasLimit }
+  return { batchSender, esOpec, nativeTokenPrice, data, gasLimit }
 }
 
 async function getValues() {
@@ -46,8 +46,8 @@ async function getValues() {
 }
 
 async function main() {
-  const wallet = { address: "0x5F799f365Fa8A2B60ac0429C48B153cA5a6f0Cf8" }
-  const { batchSender, esGmx, nativeTokenPrice, data } = await getValues()
+  const wallet = { address: "0x937B52690883994B0549b6a3093356b83a1F59a0" }
+  const { batchSender, esOpec, nativeTokenPrice, data } = await getValues()
   const { nativeToken } = tokens
   const nativeTokenContract = await contractAt("Token", nativeToken.address)
 
@@ -64,16 +64,16 @@ async function main() {
   let totalAffiliateUsd = bigNumberify(0)
   let totalDiscountAmount = bigNumberify(0)
   let totalDiscountUsd = bigNumberify(0)
-  let totalEsGmxAmount = bigNumberify(0)
+  let totalEsOpecAmount = bigNumberify(0)
   const affiliateAccounts = []
   const affiliateAmounts = []
   const discountAccounts = []
   const discountAmounts = []
-  const esGmxAccounts = []
-  const esGmxAmounts = []
+  const esOpecAccounts = []
+  const esOpecAmounts = []
 
   for (let i = 0; i < affiliatesData.length; i++) {
-    const { account, rebateUsd, esgmxRewardsUsd } = affiliatesData[i]
+    const { account, rebateUsd, esopecRewardsUsd } = affiliatesData[i]
     if (account === AddressZero) { continue }
 
     const amount = bigNumberify(rebateUsd).mul(expandDecimals(1, 18)).div(expandDecimals(nativeTokenPrice, 30))
@@ -82,11 +82,11 @@ async function main() {
     totalAffiliateAmount = totalAffiliateAmount.add(amount)
     totalAffiliateUsd = totalAffiliateUsd.add(rebateUsd)
 
-    if (esgmxRewardsUsd) {
-      const esGmxAmount = bigNumberify(esgmxRewardsUsd).mul(expandDecimals(1, 18)).div(expandDecimals(gmxPrice, 30))
-      esGmxAccounts.push(account)
-      esGmxAmounts.push(esGmxAmount)
-      totalEsGmxAmount = totalEsGmxAmount.add(esGmxAmount)
+    if (esopecRewardsUsd) {
+      const esOpecAmount = bigNumberify(esopecRewardsUsd).mul(expandDecimals(1, 18)).div(expandDecimals(opecPrice, 30))
+      esOpecAccounts.push(account)
+      esOpecAmounts.push(esOpecAmount)
+      totalEsOpecAmount = totalEsOpecAmount.add(esOpecAmount)
     }
   }
 
@@ -121,7 +121,7 @@ async function main() {
   console.log("total trader rebates (USD)", ethers.utils.formatUnits(totalDiscountUsd, 30))
   console.log(`total ${nativeToken.name}`, ethers.utils.formatUnits(totalNativeAmount, 18))
   console.log(`total USD`, ethers.utils.formatUnits(totalAffiliateUsd.add(totalDiscountUsd), 30))
-  console.log(`total esGmx`, ethers.utils.formatUnits(totalEsGmxAmount, 18))
+  console.log(`total esOpec`, ethers.utils.formatUnits(totalEsOpecAmount, 18))
 
   const batchSize = 150
 
@@ -159,15 +159,15 @@ async function main() {
       await sendTxn(batchSender.sendAndEmit(nativeToken.address, accounts, amounts, traderDiscountsTypeId), "batchSender.sendAndEmit(nativeToken, trader rebates)")
     })
 
-    await sendTxn(esGmx.approve(batchSender.address, totalEsGmxAmount), "esGmx.approve")
+    await sendTxn(esOpec.approve(batchSender.address, totalEsOpecAmount), "esOpec.approve")
 
-    await processBatch([esGmxAccounts, esGmxAmounts], batchSize, async (currentBatch) => {
+    await processBatch([esOpecAccounts, esOpecAmounts], batchSize, async (currentBatch) => {
       printBatch(currentBatch)
 
       const accounts = currentBatch.map((item) => item[0])
       const amounts = currentBatch.map((item) => item[1])
 
-      await sendTxn(batchSender.sendAndEmit(esGmx.address, accounts, amounts, affiliateRewardsTypeId), "batchSender.sendAndEmit(nativeToken, esGmx affiliate rewards)")
+      await sendTxn(batchSender.sendAndEmit(esOpec.address, accounts, amounts, affiliateRewardsTypeId), "batchSender.sendAndEmit(nativeToken, esOpec affiliate rewards)")
     })
   }
 }

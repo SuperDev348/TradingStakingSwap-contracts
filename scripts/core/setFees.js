@@ -10,7 +10,7 @@ async function main() {
 
   let vault
   if (network === "avax") {
-    vault = await contractAt("Vault", "0x9ab2De34A33fB459b538c43f251eB825645e8595")
+    vault = await contractAt("Vault", "0x050C08cdeEc2e081Eb0Bf5181AAA4D8FfC18A38f")
   }
   if (network === "arbitrum") {
     vault = await contractAt("Vault", "0x489ee077994B6658eAfA855C308275EAd8097C4A")

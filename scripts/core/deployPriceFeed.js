@@ -14,19 +14,19 @@ async function deployPriceFeedArb() {
     throw new Error("Invalid price precision")
   }
 
-  const signer = await getFrameSigner()
+  // const signer = await getFrameSigner()
 
   const timelock = { address: "0x1e0FD2CC7329Ddf6bDA35f85579E1bC2996dB0d9" }
-  const fastPriceFeedGov = { address: "0x49B373D422BdA4C6BfCdd5eC1E48A9a26fdA2F8b" }
+  const fastPriceFeedGov = { address: "0x99286B99f68f54e7797cB9C10133768e687DCcFF" }
 
-  const updater1 = { address: "0x1E359EaE31F5815AC3D5B337B26771Bc8ADbDFA3" }
-  const keeper1 = { address: "0xEF9092d35Fda3e5b6E2Dd3Fac5b580aefc346FAf" }
+  const updater1 = { address: "0x99286B99f68f54e7797cB9C10133768e687DCcFF" }
+  const keeper1 = { address: "0x937B52690883994B0549b6a3093356b83a1F59a0" }
   const updaters = [updater1.address, keeper1.address]
 
-  const signers = ["0x8A78BA7F6c187e381ffE9B6414FC11cebd5993c1"]
-  const tokenManager = { address: "0x1EF8156b46e6f5A1973BfF4975177fd13275Ad59" }
+  const signers = ["0x99286B99f68f54e7797cB9C10133768e687DCcFF"]
+  const tokenManager = { address: "0x86ea5b808035cDfc6aD992ea51Fb7FAAdeDAeC2E" }
 
-  const positionRouter = await contractAt("PositionRouter", "0x3D6bA331e3D9702C5e8A8d254e5d8a285F223aba")
+  const positionRouter = await contractAt("PositionRouter", "0x170A4C49928779b7E1096444a31db4D01993047a")
 
   // const fastPriceEvents = await contractAt("FastPriceEvents", "0x4530b7DE1958270A2376be192a24175D795e1b07", signer)
   const fastPriceEvents = await deployContract("FastPriceEvents", [])
@@ -81,16 +81,16 @@ async function deployPriceFeedAvax() {
   // const signer = await getFrameSigner()
 
   const timelock = { address: "0xfec6FA94aF7BF1Ec917550426F6785aeee898814" }
-  const fastPriceFeedGov = { address: "0x49B373D422BdA4C6BfCdd5eC1E48A9a26fdA2F8b" }
+  const fastPriceFeedGov = { address: "0x99286B99f68f54e7797cB9C10133768e687DCcFF" }
 
-  const updater1 = { address: "0x89a072F18c7D0Bdf568e93553B715BBf5205690e" }
-  const keeper1 = { address: "0x864dB9152169D68299b599331c6bFc77e3F91070" }
+  const updater1 = { address: "0x99286B99f68f54e7797cB9C10133768e687DCcFF" }
+  const keeper1 = { address: "0x937B52690883994B0549b6a3093356b83a1F59a0" }
   const updaters = [updater1.address, keeper1.address]
 
-  const signers = ["0x1D6d107F5960A66f293Ac07EDd08c1ffE79B548a"]
-  const tokenManager = { address: "0x7F98d265Ba2609c1534D12cF6b0976505Ad7F653" }
+  const signers = ["0x99286B99f68f54e7797cB9C10133768e687DCcFF"]
+  const tokenManager = { address: "0x86ea5b808035cDfc6aD992ea51Fb7FAAdeDAeC2E" }
 
-  const positionRouter = await contractAt("PositionRouter", "0x195256074192170d1530527abC9943759c7167d8")
+  const positionRouter = await contractAt("PositionRouter", "0x170A4C49928779b7E1096444a31db4D01993047a")
 
   const fastPriceEvents = await deployContract("FastPriceEvents", [])
 

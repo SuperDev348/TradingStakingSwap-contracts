@@ -53,13 +53,13 @@ const distribute = async () => {
     nftHolders[from].count--
   }
 
-  const stakedGmxBalances = await processFile(inputDir + "staked-gmx-balances.csv")
+  const stakedOpecBalances = await processFile(inputDir + "staked-opec-balances.csv")
   const vestedBalances = await processFile(inputDir + "vested-balances.csv")
 
   const holders = {}
 
-  for (let i = 0; i < stakedGmxBalances.length; i++) {
-    const tokenHolder = stakedGmxBalances[i]
+  for (let i = 0; i < stakedOpecBalances.length; i++) {
+    const tokenHolder = stakedOpecBalances[i]
     const account = tokenHolder.HolderAddress.toLowerCase()
 
     if (holders[account] === undefined) { holders[account] = 0 }
@@ -110,31 +110,31 @@ const distribute = async () => {
 
   let accounts = []
   let amounts = []
-  const totalEsGmx = 4000
-  let totalEsGmxAmount = bigNumberify(0)
+  const totalEsOpec = 4000
+  let totalEsOpecAmount = bigNumberify(0)
 
   const batchSender = await contractAt("BatchSender", "0x401Ab96410BcdCA81b79c68D0D664D478906C184")
-  const esGmx = await contractAt("Token", "0xf42Ae1D54fd613C9bb14810b0588FaAa09a426cA")
+  const esOpec = await contractAt("Token", "0xf42Ae1D54fd613C9bb14810b0588FaAa09a426cA")
   if (shouldSendTokens) {
-    await sendTxn(esGmx.approve(batchSender.address, expandDecimals(totalEsGmx, 18)), "esGmx.approve")
+    await sendTxn(esOpec.approve(batchSender.address, expandDecimals(totalEsOpec, 18)), "esOpec.approve")
   }
 
   const batchSize = 500
 
   for (let i = 0; i < balanceList.length; i++) {
     const { account, balance } = balanceList[i]
-    const esGmxValue = (totalEsGmx - 1) * balance / totalBalance
-    const esGmxAmount = ethers.utils.parseUnits(esGmxValue.toFixed(4), 18)
+    const esOpecValue = (totalEsOpec - 1) * balance / totalBalance
+    const esOpecAmount = ethers.utils.parseUnits(esOpecValue.toFixed(4), 18)
 
     accounts.push(account)
-    amounts.push(esGmxAmount)
-    totalEsGmxAmount = totalEsGmxAmount.add(esGmxAmount)
+    amounts.push(esOpecAmount)
+    totalEsOpecAmount = totalEsOpecAmount.add(esOpecAmount)
 
-    console.log(`${i+1},${account},${esGmxValue},${esGmxAmount.toString()}`)
+    console.log(`${i+1},${account},${esOpecValue},${esOpecAmount.toString()}`)
 
     if (accounts.length === batchSize && shouldSendTokens) {
       console.log("sending batch", i, accounts.length, amounts.length)
-      await sendTxn(batchSender.send(esGmx.address,  accounts, amounts), "batchSender.send")
+      await sendTxn(batchSender.send(esOpec.address,  accounts, amounts), "batchSender.send")
 
       accounts = []
       amounts = []
@@ -143,10 +143,10 @@ const distribute = async () => {
 
   if (accounts.length > 0 && shouldSendTokens) {
     console.log("sending final batch", balanceList.length, accounts.length, amounts.length)
-    await sendTxn(batchSender.send(esGmx.address,  accounts, amounts), "batchSender.send")
+    await sendTxn(batchSender.send(esOpec.address,  accounts, amounts), "batchSender.send")
   }
 
-  console.log("totalEsGmxAmount", totalEsGmxAmount.toString())
+  console.log("totalEsOpecAmount", totalEsOpecAmount.toString())
 }
 
 const run = async () => {

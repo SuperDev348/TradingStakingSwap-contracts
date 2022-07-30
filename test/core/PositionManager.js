@@ -30,8 +30,8 @@ describe("PositionManager", function () {
   let orderBook
   let deployTimelock
 
-  let glpManager
-  let glp
+  let xpcManager
+  let xpc
 
   beforeEach(async () => {
     bnb = await deployContract("Token", [])
@@ -78,8 +78,8 @@ describe("PositionManager", function () {
     await router.addPlugin(orderBook.address)
     await router.connect(user0).approvePlugin(orderBook.address)
 
-    glp = await deployContract("GLP", [])
-    glpManager = await deployContract("GlpManager", [vault.address, usdg.address, glp.address, 24 * 60 * 60])
+    xpc = await deployContract("XPC", [])
+    xpcManager = await deployContract("XpcManager", [vault.address, usdg.address, xpc.address, 24 * 60 * 60])
 
     positionManager = await deployContract("PositionManager", [vault.address, router.address, bnb.address, 50, orderBook.address])
 

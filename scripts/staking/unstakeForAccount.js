@@ -2,59 +2,59 @@ const { deployContract, contractAt, sendTxn } = require("../shared/helpers")
 const { expandDecimals } = require("../../test/shared/utilities")
 
 async function main() {
-  const wallet = { address: "0x5F799f365Fa8A2B60ac0429C48B153cA5a6f0Cf8" }
+  const wallet = { address: "0x937B52690883994B0549b6a3093356b83a1F59a0" }
 
   const account = "0x6eA748d14f28778495A3fBa3550a6CdfBbE555f9"
   const unstakeAmount = "79170000000000000000"
 
   const rewardRouter = await contractAt("RewardRouter", "0x1b8911995ee36F4F95311D1D9C1845fA18c56Ec6")
-  const gmx = await contractAt("GMX", "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a");
-  const bnGmx = await contractAt("MintableBaseToken", "0x35247165119B69A40edD5304969560D0ef486921");
-  const stakedGmxTracker = await contractAt("RewardTracker", "0x908C4D94D34924765f1eDc22A1DD098397c59dD4")
-  const bonusGmxTracker = await contractAt("RewardTracker", "0x4d268a7d4C16ceB5a606c173Bd974984343fea13")
-  const feeGmxTracker = await contractAt("RewardTracker", "0xd2D1162512F927a7e282Ef43a362659E4F2a728F")
+  const opec = await contractAt("OPEC", "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a");
+  const bnOpec = await contractAt("MintableBaseToken", "0x35247165119B69A40edD5304969560D0ef486921");
+  const stakedOpecTracker = await contractAt("RewardTracker", "0x908C4D94D34924765f1eDc22A1DD098397c59dD4")
+  const bonusOpecTracker = await contractAt("RewardTracker", "0x4d268a7d4C16ceB5a606c173Bd974984343fea13")
+  const feeOpecTracker = await contractAt("RewardTracker", "0xd2D1162512F927a7e282Ef43a362659E4F2a728F")
 
   // const gasLimit = 30000000
 
-  // await sendTxn(feeGmxTracker.setHandler(wallet.address, true, { gasLimit }), "feeGmxTracker.setHandler")
-  // await sendTxn(bonusGmxTracker.setHandler(wallet.address, true, { gasLimit }), "bonusGmxTracker.setHandler")
-  // await sendTxn(stakedGmxTracker.setHandler(wallet.address, true, { gasLimit }), "stakedGmxTracker.setHandler")
+  // await sendTxn(feeOpecTracker.setHandler(wallet.address, true, { gasLimit }), "feeOpecTracker.setHandler")
+  // await sendTxn(bonusOpecTracker.setHandler(wallet.address, true, { gasLimit }), "bonusOpecTracker.setHandler")
+  // await sendTxn(stakedOpecTracker.setHandler(wallet.address, true, { gasLimit }), "stakedOpecTracker.setHandler")
 
-  const stakedAmount = await stakedGmxTracker.stakedAmounts(account)
+  const stakedAmount = await stakedOpecTracker.stakedAmounts(account)
   console.log(`${account} staked: ${stakedAmount.toString()}`)
   console.log(`unstakeAmount: ${unstakeAmount.toString()}`)
 
-  await sendTxn(feeGmxTracker.unstakeForAccount(account, bonusGmxTracker.address, unstakeAmount, account), "feeGmxTracker.unstakeForAccount")
-  await sendTxn(bonusGmxTracker.unstakeForAccount(account, stakedGmxTracker.address, unstakeAmount, account), "bonusGmxTracker.unstakeForAccount")
-  await sendTxn(stakedGmxTracker.unstakeForAccount(account, gmx.address, unstakeAmount, account), "stakedGmxTracker.unstakeForAccount")
+  await sendTxn(feeOpecTracker.unstakeForAccount(account, bonusOpecTracker.address, unstakeAmount, account), "feeOpecTracker.unstakeForAccount")
+  await sendTxn(bonusOpecTracker.unstakeForAccount(account, stakedOpecTracker.address, unstakeAmount, account), "bonusOpecTracker.unstakeForAccount")
+  await sendTxn(stakedOpecTracker.unstakeForAccount(account, opec.address, unstakeAmount, account), "stakedOpecTracker.unstakeForAccount")
 
-  await sendTxn(bonusGmxTracker.claimForAccount(account, account), "bonusGmxTracker.claimForAccount")
+  await sendTxn(bonusOpecTracker.claimForAccount(account, account), "bonusOpecTracker.claimForAccount")
 
-  const bnGmxAmount = await bnGmx.balanceOf(account)
-  console.log(`bnGmxAmount: ${bnGmxAmount.toString()}`)
+  const bnOpecAmount = await bnOpec.balanceOf(account)
+  console.log(`bnOpecAmount: ${bnOpecAmount.toString()}`)
 
-  await sendTxn(feeGmxTracker.stakeForAccount(account, account, bnGmx.address, bnGmxAmount), "feeGmxTracker.stakeForAccount")
+  await sendTxn(feeOpecTracker.stakeForAccount(account, account, bnOpec.address, bnOpecAmount), "feeOpecTracker.stakeForAccount")
 
-  const stakedBnGmx = await feeGmxTracker.depositBalances(account, bnGmx.address)
-  console.log(`stakedBnGmx: ${stakedBnGmx.toString()}`)
+  const stakedBnOpec = await feeOpecTracker.depositBalances(account, bnOpec.address)
+  console.log(`stakedBnOpec: ${stakedBnOpec.toString()}`)
 
-  const reductionAmount = stakedBnGmx.mul(unstakeAmount).div(stakedAmount)
+  const reductionAmount = stakedBnOpec.mul(unstakeAmount).div(stakedAmount)
   console.log(`reductionAmount: ${reductionAmount.toString()}`)
-  await sendTxn(feeGmxTracker.unstakeForAccount(account, bnGmx.address, reductionAmount, account), "feeGmxTracker.unstakeForAccount")
-  await sendTxn(bnGmx.burn(account, reductionAmount), "bnGmx.burn")
+  await sendTxn(feeOpecTracker.unstakeForAccount(account, bnOpec.address, reductionAmount, account), "feeOpecTracker.unstakeForAccount")
+  await sendTxn(bnOpec.burn(account, reductionAmount), "bnOpec.burn")
 
-  const gmxAmount = await gmx.balanceOf(account)
-  console.log(`gmxAmount: ${gmxAmount.toString()}`)
+  const opecAmount = await opec.balanceOf(account)
+  console.log(`opecAmount: ${opecAmount.toString()}`)
 
-  await sendTxn(gmx.burn(account, unstakeAmount), "gmx.burn")
-  const nextGmxAmount = await gmx.balanceOf(account)
-  console.log(`nextGmxAmount: ${nextGmxAmount.toString()}`)
+  await sendTxn(opec.burn(account, unstakeAmount), "opec.burn")
+  const nextOpecAmount = await opec.balanceOf(account)
+  console.log(`nextOpecAmount: ${nextOpecAmount.toString()}`)
 
-  const nextStakedAmount = await stakedGmxTracker.stakedAmounts(account)
+  const nextStakedAmount = await stakedOpecTracker.stakedAmounts(account)
   console.log(`nextStakedAmount: ${nextStakedAmount.toString()}`)
 
-  const nextStakedBnGmx = await feeGmxTracker.depositBalances(account, bnGmx.address)
-  console.log(`nextStakedBnGmx: ${nextStakedBnGmx.toString()}`)
+  const nextStakedBnOpec = await feeOpecTracker.depositBalances(account, bnOpec.address)
+  console.log(`nextStakedBnOpec: ${nextStakedBnOpec.toString()}`)
 }
 
 main()

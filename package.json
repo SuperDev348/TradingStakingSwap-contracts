@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@nomiclabs/hardhat-ethers": "^2.0.1",
+    "@nomiclabs/hardhat-ethers": "^2.0.6",
     "@nomiclabs/hardhat-etherscan": "^3.0.3",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
     "@typechain/ethers-v5": "^7.0.1",
@@ -19,9 +19,10 @@
     "argparse": "2.0.1",
     "chai": "^4.3.0",
     "ethereum-waffle": "^3.3.0",
-    "ethers": "^5.4.6",
+    "ethers": "^5.6.9",
     "hardhat": "^2.6.1",
     "hardhat-contract-sizer": "^2.0.3",
+    "hardhat-deploy": "^0.11.10",
     "node-fetch": "3.2.3",
     "typechain": "^5.1.2"
   },
@@ -30,6 +31,8 @@
     "@uniswap/v3-sdk": "^3.8.2",
     "bn.js": "^5.2.0",
     "csv-parse": "^4.16.3",
-    "node-fetch": "^2.6.7"
+    "hardhat-abi-exporter": "^2.9.0",
+    "node-fetch": "^2.6.7",
+    "yarn": "^1.22.19"
   }
 }

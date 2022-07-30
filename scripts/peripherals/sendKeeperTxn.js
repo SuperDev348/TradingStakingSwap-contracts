@@ -20,9 +20,9 @@ async function getArbValues() {
   const wallet = new ethers.Wallet(ARBITRUM_DEPLOY_KEY).connect(provider)
   const priceTxnUrl = ARBITRUM_PRICE_TXN_URL
   const priceKey = ARBITRUM_PRICE_KEY
-  const gmx = new ethers.Contract("0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a", BaseToken.abi, wallet)
+  const opec = new ethers.Contract("0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a", BaseToken.abi, wallet)
 
-  return { wallet, priceTxnUrl, priceKey, gmx }
+  return { wallet, priceTxnUrl, priceKey, opec }
 }
 
 async function getAvaxValues() {
@@ -30,9 +30,9 @@ async function getAvaxValues() {
   const wallet = new ethers.Wallet(AVAX_DEPLOY_KEY).connect(provider)
   const priceTxnUrl = AVAX_PRICE_TXN_URL
   const priceKey = AVAX_PRICE_KEY
-  const gmx = new ethers.Contract("0x62edc0692BD897D2295872a9FFCac5425011c661", BaseToken.abi, wallet)
+  const opec = new ethers.Contract("0x62edc0692BD897D2295872a9FFCac5425011c661", BaseToken.abi, wallet)
 
-  return { wallet, priceTxnUrl, priceKey, gmx }
+  return { wallet, priceTxnUrl, priceKey, opec }
 }
 
 function getValues() {
@@ -46,9 +46,9 @@ function getValues() {
 }
 
 async function main() {
-  const { wallet, priceTxnUrl, priceKey, gmx } = await getValues()
+  const { wallet, priceTxnUrl, priceKey, opec } = await getValues()
 
-  let unsignedTxn = await gmx.populateTransaction.approve("0x5F799f365Fa8A2B60ac0429C48B153cA5a6f0Cf8", 100)
+  let unsignedTxn = await opec.populateTransaction.approve("0x937B52690883994B0549b6a3093356b83a1F59a0", 100)
   unsignedTxn = await wallet.populateTransaction(unsignedTxn)
   console.log("unsignedTxn", unsignedTxn)
   const rawTxn = await wallet.signTransaction(unsignedTxn)

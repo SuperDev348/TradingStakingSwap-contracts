@@ -144,7 +144,7 @@ module.exports = {
     },
     eth: {
       name: "eth",
-      address: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+      address: "0x1d308089a2d1ced3f1ce36b1fcaf815b07217be3",
       decimals: 18,
       priceFeed: "0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612",
       priceDecimals: 8,
@@ -266,14 +266,14 @@ module.exports = {
     },
     nativeToken: {
       name: "weth",
-      address: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+      address: "0x1d308089a2d1ced3f1ce36b1fcaf815b07217be3",
       decimals: 18
     }
   },
   avax: {
     avax: {
       name: "avax",
-      address: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+      address: "0x1d308089a2d1ced3f1ce36b1fcaf815b07217be3", 
       decimals: 18,
       priceFeed: "0x0A77230d17318075983913bC2145DB16C7366156",
       priceDecimals: 8,
@@ -365,8 +365,10 @@ module.exports = {
     },
     nativeToken: {
       name: "wavax",
-      address: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+      address: "0x1d308089a2d1ced3f1ce36b1fcaf815b07217be3",
       decimals: 18
     }
   }
 }
+
+//"0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",

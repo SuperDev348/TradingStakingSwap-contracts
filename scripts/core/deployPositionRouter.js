@@ -6,13 +6,13 @@ const network = (process.env.HARDHAT_NETWORK || 'mainnet');
 const tokens = require('./tokens')[network];
 
 async function deployOnArb() {
-  const signer = await getFrameSigner()
+  // const signer = await getFrameSigner()
 
-  const vault = await contractAt("Vault", "0x489ee077994B6658eAfA855C308275EAd8097C4A")
-  const timelock = await contractAt("Timelock", await vault.gov(), signer)
-  const router = await contractAt("Router", "0xaBBc5F99639c9B6bCb58544ddf04EFA6802F4064", signer)
-  const weth = await contractAt("WETH", "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1")
-  const referralStorage = await contractAt("ReferralStorage", "0x2249D006A8cCdF4C99Aa6c8B9502a2aeCC923392")
+  const vault = await contractAt("Vault", "0x4ee1Eeb3672Fa40aea2d139Fd035DC2A9C2a3247")
+  const timelock = await contractAt("Timelock", await vault.gov()) //, signer
+  const router = await contractAt("Router", "0x2ae13Ffb89d904968993A2bbA67c1Ae558176BFB") //, signer
+  const weth = await contractAt("WETH", "0x1d308089a2d1ced3f1ce36b1fcaf815b07217be3")
+  const referralStorage = await contractAt("ReferralStorage", "0xC3D18bABe73F1234A59783A5ca7FdEc43E2b2370")
   const depositFee = "30" // 0.3%
   const minExecutionFee = "300000000000000" // 0.0003 ETH
 
@@ -29,13 +29,13 @@ async function deployOnArb() {
 }
 
 async function deployOnAvax() {
-  const signer = await getFrameSigner()
+  // const signer = await getFrameSigner()
 
-  const vault = await contractAt("Vault", "0x9ab2De34A33fB459b538c43f251eB825645e8595")
-  const timelock = await contractAt("Timelock", await vault.gov(), signer)
-  const router = await contractAt("Router", "0x5F719c2F1095F7B9fc68a68e35B51194f4b6abe8", signer)
-  const weth = await contractAt("WETH", "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7")
-  const referralStorage = await contractAt("ReferralStorage", "0x0e725cB75258c3D8e9FB47267207b8973B882eBF")
+  const vault = await contractAt("Vault", "0x4ee1Eeb3672Fa40aea2d139Fd035DC2A9C2a3247")
+  const timelock = await contractAt("Timelock", await vault.gov())
+  const router = await contractAt("Router", "0x2ae13Ffb89d904968993A2bbA67c1Ae558176BFB") //, signer
+  const weth = await contractAt("WETH", "0x1d308089a2d1ced3f1ce36b1fcaf815b07217be3")
+  const referralStorage = await contractAt("ReferralStorage", "0xC3D18bABe73F1234A59783A5ca7FdEc43E2b2370")
   const depositFee = "30" // 0.3%
   const minExecutionFee = "17000000000000000" // 0.017 AVAX
 

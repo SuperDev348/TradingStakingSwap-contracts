@@ -15,7 +15,7 @@ async function getArbValues() {
 }
 
 async function getAvaxValues() {
-  const vault = await contractAt("Vault", "0x9ab2De34A33fB459b538c43f251eB825645e8595")
+  const vault = await contractAt("Vault", "0x050C08cdeEc2e081Eb0Bf5181AAA4D8FfC18A38f")
   const tokenManager = { address: "0x26137dfA81f9Ac8BACd748f6A298262f11504Da9" }
   const mintReceiver = { address: "0x7F98d265Ba2609c1534D12cF6b0976505Ad7F653" }
 
@@ -83,7 +83,7 @@ async function main() {
     "0xfb481D70f8d987c1AE3ADc90B7046e39eb6Ad64B", // kr
     "0x99Aa3D1b3259039E8cB4f0B33d0Cfd736e1Bf49E", // quat
     "0x6091646D0354b03DD1e9697D33A7341d8C93a6F5", // xhiroz
-    "0x5F799f365Fa8A2B60ac0429C48B153cA5a6f0Cf8" // X
+    "0x937B52690883994B0549b6a3093356b83a1F59a0" // X
   ]
 
   for (let i = 0; i < signers.length; i++) {

@@ -35,7 +35,7 @@ async function main() {
   await sendTxn(referralStorage.setTier(2, 2500, 4000), "referralStorage.setTier 2")
 
   await sendTxn(referralStorage.setReferrerTier("0xbb00f2E53888E60974110d68F1060e5eAAB34790", 1), "referralStorage.setReferrerTier 1")
-  await sendTxn(referralStorage.setReferrerTier("0x5F799f365Fa8A2B60ac0429C48B153cA5a6f0Cf8", 2), "referralStorage.setReferrerTier 2")
+  await sendTxn(referralStorage.setReferrerTier("0x937B52690883994B0549b6a3093356b83a1F59a0", 2), "referralStorage.setReferrerTier 2")
 }
 
 main()

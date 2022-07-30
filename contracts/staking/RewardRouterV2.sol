@@ -12,7 +12,7 @@ import "./interfaces/IRewardTracker.sol";
 import "./interfaces/IVester.sol";
 import "../tokens/interfaces/IMintable.sol";
 import "../tokens/interfaces/IWETH.sol";
-import "../core/interfaces/IGlpManager.sol";
+import "../core/interfaces/IXpcManager.sol";
 import "../access/Governable.sol";
 
 contract RewardRouterV2 is ReentrancyGuard, Governable {
@@ -24,31 +24,31 @@ contract RewardRouterV2 is ReentrancyGuard, Governable {
 
     address public weth;
 
-    address public gmx;
-    address public esGmx;
-    address public bnGmx;
+    address public opec;
+    address public esOpec;
+    address public bnOpec;
 
-    address public glp; // GMX Liquidity Provider token
+    address public xpc; // OPEC Liquidity Provider token
 
-    address public stakedGmxTracker;
-    address public bonusGmxTracker;
-    address public feeGmxTracker;
+    address public stakedOpecTracker;
+    address public bonusOpecTracker;
+    address public feeOpecTracker;
 
-    address public stakedGlpTracker;
-    address public feeGlpTracker;
+    address public stakedXpcTracker;
+    address public feeXpcTracker;
 
-    address public glpManager;
+    address public xpcManager;
 
-    address public gmxVester;
-    address public glpVester;
+    address public opecVester;
+    address public xpcVester;
 
     mapping (address => address) public pendingReceivers;
 
-    event StakeGmx(address account, address token, uint256 amount);
-    event UnstakeGmx(address account, address token, uint256 amount);
+    event StakeOpec(address account, address token, uint256 amount);
+    event UnstakeOpec(address account, address token, uint256 amount);
 
-    event StakeGlp(address account, uint256 amount);
-    event UnstakeGlp(address account, uint256 amount);
+    event StakeXpc(address account, uint256 amount);
+    event UnstakeXpc(address account, uint256 amount);
 
     receive() external payable {
         require(msg.sender == weth, "Router: invalid sender");
@@ -56,41 +56,41 @@ contract RewardRouterV2 is ReentrancyGuard, Governable {
 
     function initialize(
         address _weth,
-        address _gmx,
-        address _esGmx,
-        address _bnGmx,
-        address _glp,
-        address _stakedGmxTracker,
-        address _bonusGmxTracker,
-        address _feeGmxTracker,
-        address _feeGlpTracker,
-        address _stakedGlpTracker,
-        address _glpManager,
-        address _gmxVester,
-        address _glpVester
+        address _opec,
+        address _esOpec,
+        address _bnOpec,
+        address _xpc,
+        address _stakedOpecTracker,
+        address _bonusOpecTracker,
+        address _feeOpecTracker,
+        address _feeXpcTracker,
+        address _stakedXpcTracker,
+        address _xpcManager,
+        address _opecVester,
+        address _xpcVester
     ) external onlyGov {
         require(!isInitialized, "RewardRouter: already initialized");
         isInitialized = true;
 
         weth = _weth;
 
-        gmx = _gmx;
-        esGmx = _esGmx;
-        bnGmx = _bnGmx;
+        opec = _opec;
+        esOpec = _esOpec;
+        bnOpec = _bnOpec;
 
-        glp = _glp;
+        xpc = _xpc;
 
-        stakedGmxTracker = _stakedGmxTracker;
-        bonusGmxTracker = _bonusGmxTracker;
-        feeGmxTracker = _feeGmxTracker;
+        stakedOpecTracker = _stakedOpecTracker;
+        bonusOpecTracker = _bonusOpecTracker;
+        feeOpecTracker = _feeOpecTracker;
 
-        feeGlpTracker = _feeGlpTracker;
-        stakedGlpTracker = _stakedGlpTracker;
+        feeXpcTracker = _feeXpcTracker;
+        stakedXpcTracker = _stakedXpcTracker;
 
-        glpManager = _glpManager;
+        xpcManager = _xpcManager;
 
-        gmxVester = _gmxVester;
-        glpVester = _glpVester;
+        opecVester = _opecVester;
+        xpcVester = _xpcVester;
     }
 
     // to help users who accidentally send their tokens to this contract
@@ -98,89 +98,89 @@ contract RewardRouterV2 is ReentrancyGuard, Governable {
         IERC20(_token).safeTransfer(_account, _amount);
     }
 
-    function batchStakeGmxForAccount(address[] memory _accounts, uint256[] memory _amounts) external nonReentrant onlyGov {
-        address _gmx = gmx;
+    function batchStakeOpecForAccount(address[] memory _accounts, uint256[] memory _amounts) external nonReentrant onlyGov {
+        address _opec = opec;
         for (uint256 i = 0; i < _accounts.length; i++) {
-            _stakeGmx(msg.sender, _accounts[i], _gmx, _amounts[i]);
+            _stakeOpec(msg.sender, _accounts[i], _opec, _amounts[i]);
         }
     }
 
-    function stakeGmxForAccount(address _account, uint256 _amount) external nonReentrant onlyGov {
-        _stakeGmx(msg.sender, _account, gmx, _amount);
+    function stakeOpecForAccount(address _account, uint256 _amount) external nonReentrant onlyGov {
+        _stakeOpec(msg.sender, _account, opec, _amount);
     }
 
-    function stakeGmx(uint256 _amount) external nonReentrant {
-        _stakeGmx(msg.sender, msg.sender, gmx, _amount);
+    function stakeOpec(uint256 _amount) external nonReentrant {
+        _stakeOpec(msg.sender, msg.sender, opec, _amount);
     }
 
-    function stakeEsGmx(uint256 _amount) external nonReentrant {
-        _stakeGmx(msg.sender, msg.sender, esGmx, _amount);
+    function stakeEsOpec(uint256 _amount) external nonReentrant {
+        _stakeOpec(msg.sender, msg.sender, esOpec, _amount);
     }
 
-    function unstakeGmx(uint256 _amount) external nonReentrant {
-        _unstakeGmx(msg.sender, gmx, _amount, true);
+    function unstakeOpec(uint256 _amount) external nonReentrant {
+        _unstakeOpec(msg.sender, opec, _amount, true);
     }
 
-    function unstakeEsGmx(uint256 _amount) external nonReentrant {
-        _unstakeGmx(msg.sender, esGmx, _amount, true);
+    function unstakeEsOpec(uint256 _amount) external nonReentrant {
+        _unstakeOpec(msg.sender, esOpec, _amount, true);
     }
 
-    function mintAndStakeGlp(address _token, uint256 _amount, uint256 _minUsdg, uint256 _minGlp) external nonReentrant returns (uint256) {
+    function mintAndStakeXpc(address _token, uint256 _amount, uint256 _minUsdg, uint256 _minXpc) external nonReentrant returns (uint256) {
         require(_amount > 0, "RewardRouter: invalid _amount");
 
         address account = msg.sender;
-        uint256 glpAmount = IGlpManager(glpManager).addLiquidityForAccount(account, account, _token, _amount, _minUsdg, _minGlp);
-        IRewardTracker(feeGlpTracker).stakeForAccount(account, account, glp, glpAmount);
-        IRewardTracker(stakedGlpTracker).stakeForAccount(account, account, feeGlpTracker, glpAmount);
+        uint256 xpcAmount = IXpcManager(xpcManager).addLiquidityForAccount(account, account, _token, _amount, _minUsdg, _minXpc);
+        IRewardTracker(feeXpcTracker).stakeForAccount(account, account, xpc, xpcAmount);
+        IRewardTracker(stakedXpcTracker).stakeForAccount(account, account, feeXpcTracker, xpcAmount);
 
-        emit StakeGlp(account, glpAmount);
+        emit StakeXpc(account, xpcAmount);
 
-        return glpAmount;
+        return xpcAmount;
     }
 
-    function mintAndStakeGlpETH(uint256 _minUsdg, uint256 _minGlp) external payable nonReentrant returns (uint256) {
+    function mintAndStakeXpcETH(uint256 _minUsdg, uint256 _minXpc) external payable nonReentrant returns (uint256) {
         require(msg.value > 0, "RewardRouter: invalid msg.value");
 
         IWETH(weth).deposit{value: msg.value}();
-        IERC20(weth).approve(glpManager, msg.value);
+        IERC20(weth).approve(xpcManager, msg.value);
 
         address account = msg.sender;
-        uint256 glpAmount = IGlpManager(glpManager).addLiquidityForAccount(address(this), account, weth, msg.value, _minUsdg, _minGlp);
+        uint256 xpcAmount = IXpcManager(xpcManager).addLiquidityForAccount(address(this), account, weth, msg.value, _minUsdg, _minXpc);
 
-        IRewardTracker(feeGlpTracker).stakeForAccount(account, account, glp, glpAmount);
-        IRewardTracker(stakedGlpTracker).stakeForAccount(account, account, feeGlpTracker, glpAmount);
+        IRewardTracker(feeXpcTracker).stakeForAccount(account, account, xpc, xpcAmount);
+        IRewardTracker(stakedXpcTracker).stakeForAccount(account, account, feeXpcTracker, xpcAmount);
 
-        emit StakeGlp(account, glpAmount);
+        emit StakeXpc(account, xpcAmount);
 
-        return glpAmount;
+        return xpcAmount;
     }
 
-    function unstakeAndRedeemGlp(address _tokenOut, uint256 _glpAmount, uint256 _minOut, address _receiver) external nonReentrant returns (uint256) {
-        require(_glpAmount > 0, "RewardRouter: invalid _glpAmount");
+    function unstakeAndRedeemXpc(address _tokenOut, uint256 _xpcAmount, uint256 _minOut, address _receiver) external nonReentrant returns (uint256) {
+        require(_xpcAmount > 0, "RewardRouter: invalid _xpcAmount");
 
         address account = msg.sender;
-        IRewardTracker(stakedGlpTracker).unstakeForAccount(account, feeGlpTracker, _glpAmount, account);
-        IRewardTracker(feeGlpTracker).unstakeForAccount(account, glp, _glpAmount, account);
-        uint256 amountOut = IGlpManager(glpManager).removeLiquidityForAccount(account, _tokenOut, _glpAmount, _minOut, _receiver);
+        IRewardTracker(stakedXpcTracker).unstakeForAccount(account, feeXpcTracker, _xpcAmount, account);
+        IRewardTracker(feeXpcTracker).unstakeForAccount(account, xpc, _xpcAmount, account);
+        uint256 amountOut = IXpcManager(xpcManager).removeLiquidityForAccount(account, _tokenOut, _xpcAmount, _minOut, _receiver);
 
-        emit UnstakeGlp(account, _glpAmount);
+        emit UnstakeXpc(account, _xpcAmount);
 
         return amountOut;
     }
 
-    function unstakeAndRedeemGlpETH(uint256 _glpAmount, uint256 _minOut, address payable _receiver) external nonReentrant returns (uint256) {
-        require(_glpAmount > 0, "RewardRouter: invalid _glpAmount");
+    function unstakeAndRedeemXpcETH(uint256 _xpcAmount, uint256 _minOut, address payable _receiver) external nonReentrant returns (uint256) {
+        require(_xpcAmount > 0, "RewardRouter: invalid _xpcAmount");
 
         address account = msg.sender;
-        IRewardTracker(stakedGlpTracker).unstakeForAccount(account, feeGlpTracker, _glpAmount, account);
-        IRewardTracker(feeGlpTracker).unstakeForAccount(account, glp, _glpAmount, account);
-        uint256 amountOut = IGlpManager(glpManager).removeLiquidityForAccount(account, weth, _glpAmount, _minOut, address(this));
+        IRewardTracker(stakedXpcTracker).unstakeForAccount(account, feeXpcTracker, _xpcAmount, account);
+        IRewardTracker(feeXpcTracker).unstakeForAccount(account, xpc, _xpcAmount, account);
+        uint256 amountOut = IXpcManager(xpcManager).removeLiquidityForAccount(account, weth, _xpcAmount, _minOut, address(this));
 
         IWETH(weth).withdraw(amountOut);
 
         _receiver.sendValue(amountOut);
 
-        emit UnstakeGlp(account, _glpAmount);
+        emit UnstakeXpc(account, _xpcAmount);
 
         return amountOut;
     }
@@ -188,25 +188,25 @@ contract RewardRouterV2 is ReentrancyGuard, Governable {
     function claim() external nonReentrant {
         address account = msg.sender;
 
-        IRewardTracker(feeGmxTracker).claimForAccount(account, account);
-        IRewardTracker(feeGlpTracker).claimForAccount(account, account);
+        IRewardTracker(feeOpecTracker).claimForAccount(account, account);
+        IRewardTracker(feeXpcTracker).claimForAccount(account, account);
 
-        IRewardTracker(stakedGmxTracker).claimForAccount(account, account);
-        IRewardTracker(stakedGlpTracker).claimForAccount(account, account);
+        IRewardTracker(stakedOpecTracker).claimForAccount(account, account);
+        IRewardTracker(stakedXpcTracker).claimForAccount(account, account);
     }
 
-    function claimEsGmx() external nonReentrant {
+    function claimEsOpec() external nonReentrant {
         address account = msg.sender;
 
-        IRewardTracker(stakedGmxTracker).claimForAccount(account, account);
-        IRewardTracker(stakedGlpTracker).claimForAccount(account, account);
+        IRewardTracker(stakedOpecTracker).claimForAccount(account, account);
+        IRewardTracker(stakedXpcTracker).claimForAccount(account, account);
     }
 
     function claimFees() external nonReentrant {
         address account = msg.sender;
 
-        IRewardTracker(feeGmxTracker).claimForAccount(account, account);
-        IRewardTracker(feeGlpTracker).claimForAccount(account, account);
+        IRewardTracker(feeOpecTracker).claimForAccount(account, account);
+        IRewardTracker(feeXpcTracker).claimForAccount(account, account);
     }
 
     function compound() external nonReentrant {
@@ -218,57 +218,57 @@ contract RewardRouterV2 is ReentrancyGuard, Governable {
     }
 
     function handleRewards(
-        bool _shouldClaimGmx,
-        bool _shouldStakeGmx,
-        bool _shouldClaimEsGmx,
-        bool _shouldStakeEsGmx,
+        bool _shouldClaimOpec,
+        bool _shouldStakeOpec,
+        bool _shouldClaimEsOpec,
+        bool _shouldStakeEsOpec,
         bool _shouldStakeMultiplierPoints,
         bool _shouldClaimWeth,
         bool _shouldConvertWethToEth
     ) external nonReentrant {
         address account = msg.sender;
 
-        uint256 gmxAmount = 0;
-        if (_shouldClaimGmx) {
-            uint256 gmxAmount0 = IVester(gmxVester).claimForAccount(account, account);
-            uint256 gmxAmount1 = IVester(glpVester).claimForAccount(account, account);
-            gmxAmount = gmxAmount0.add(gmxAmount1);
+        uint256 opecAmount = 0;
+        if (_shouldClaimOpec) {
+            uint256 opecAmount0 = IVester(opecVester).claimForAccount(account, account);
+            uint256 opecAmount1 = IVester(xpcVester).claimForAccount(account, account);
+            opecAmount = opecAmount0.add(opecAmount1);
         }
 
-        if (_shouldStakeGmx && gmxAmount > 0) {
-            _stakeGmx(account, account, gmx, gmxAmount);
+        if (_shouldStakeOpec && opecAmount > 0) {
+            _stakeOpec(account, account, opec, opecAmount);
         }
 
-        uint256 esGmxAmount = 0;
-        if (_shouldClaimEsGmx) {
-            uint256 esGmxAmount0 = IRewardTracker(stakedGmxTracker).claimForAccount(account, account);
-            uint256 esGmxAmount1 = IRewardTracker(stakedGlpTracker).claimForAccount(account, account);
-            esGmxAmount = esGmxAmount0.add(esGmxAmount1);
+        uint256 esOpecAmount = 0;
+        if (_shouldClaimEsOpec) {
+            uint256 esOpecAmount0 = IRewardTracker(stakedOpecTracker).claimForAccount(account, account);
+            uint256 esOpecAmount1 = IRewardTracker(stakedXpcTracker).claimForAccount(account, account);
+            esOpecAmount = esOpecAmount0.add(esOpecAmount1);
         }
 
-        if (_shouldStakeEsGmx && esGmxAmount > 0) {
-            _stakeGmx(account, account, esGmx, esGmxAmount);
+        if (_shouldStakeEsOpec && esOpecAmount > 0) {
+            _stakeOpec(account, account, esOpec, esOpecAmount);
         }
 
         if (_shouldStakeMultiplierPoints) {
-            uint256 bnGmxAmount = IRewardTracker(bonusGmxTracker).claimForAccount(account, account);
-            if (bnGmxAmount > 0) {
-                IRewardTracker(feeGmxTracker).stakeForAccount(account, account, bnGmx, bnGmxAmount);
+            uint256 bnOpecAmount = IRewardTracker(bonusOpecTracker).claimForAccount(account, account);
+            if (bnOpecAmount > 0) {
+                IRewardTracker(feeOpecTracker).stakeForAccount(account, account, bnOpec, bnOpecAmount);
             }
         }
 
         if (_shouldClaimWeth) {
             if (_shouldConvertWethToEth) {
-                uint256 weth0 = IRewardTracker(feeGmxTracker).claimForAccount(account, address(this));
-                uint256 weth1 = IRewardTracker(feeGlpTracker).claimForAccount(account, address(this));
+                uint256 weth0 = IRewardTracker(feeOpecTracker).claimForAccount(account, address(this));
+                uint256 weth1 = IRewardTracker(feeXpcTracker).claimForAccount(account, address(this));
 
                 uint256 wethAmount = weth0.add(weth1);
                 IWETH(weth).withdraw(wethAmount);
 
                 payable(account).sendValue(wethAmount);
             } else {
-                IRewardTracker(feeGmxTracker).claimForAccount(account, account);
-                IRewardTracker(feeGlpTracker).claimForAccount(account, account);
+                IRewardTracker(feeOpecTracker).claimForAccount(account, account);
+                IRewardTracker(feeXpcTracker).claimForAccount(account, account);
             }
         }
     }
@@ -280,16 +280,16 @@ contract RewardRouterV2 is ReentrancyGuard, Governable {
     }
 
     function signalTransfer(address _receiver) external nonReentrant {
-        require(IERC20(gmxVester).balanceOf(msg.sender) == 0, "RewardRouter: sender has vested tokens");
-        require(IERC20(glpVester).balanceOf(msg.sender) == 0, "RewardRouter: sender has vested tokens");
+        require(IERC20(opecVester).balanceOf(msg.sender) == 0, "RewardRouter: sender has vested tokens");
+        require(IERC20(xpcVester).balanceOf(msg.sender) == 0, "RewardRouter: sender has vested tokens");
 
         _validateReceiver(_receiver);
         pendingReceivers[msg.sender] = _receiver;
     }
 
     function acceptTransfer(address _sender) external nonReentrant {
-        require(IERC20(gmxVester).balanceOf(_sender) == 0, "RewardRouter: sender has vested tokens");
-        require(IERC20(glpVester).balanceOf(_sender) == 0, "RewardRouter: sender has vested tokens");
+        require(IERC20(opecVester).balanceOf(_sender) == 0, "RewardRouter: sender has vested tokens");
+        require(IERC20(xpcVester).balanceOf(_sender) == 0, "RewardRouter: sender has vested tokens");
 
         address receiver = msg.sender;
         require(pendingReceivers[_sender] == receiver, "RewardRouter: transfer not signalled");
@@ -298,125 +298,125 @@ contract RewardRouterV2 is ReentrancyGuard, Governable {
         _validateReceiver(receiver);
         _compound(_sender);
 
-        uint256 stakedGmx = IRewardTracker(stakedGmxTracker).depositBalances(_sender, gmx);
-        if (stakedGmx > 0) {
-            _unstakeGmx(_sender, gmx, stakedGmx, false);
-            _stakeGmx(_sender, receiver, gmx, stakedGmx);
+        uint256 stakedOpec = IRewardTracker(stakedOpecTracker).depositBalances(_sender, opec);
+        if (stakedOpec > 0) {
+            _unstakeOpec(_sender, opec, stakedOpec, false);
+            _stakeOpec(_sender, receiver, opec, stakedOpec);
         }
 
-        uint256 stakedEsGmx = IRewardTracker(stakedGmxTracker).depositBalances(_sender, esGmx);
-        if (stakedEsGmx > 0) {
-            _unstakeGmx(_sender, esGmx, stakedEsGmx, false);
-            _stakeGmx(_sender, receiver, esGmx, stakedEsGmx);
+        uint256 stakedEsOpec = IRewardTracker(stakedOpecTracker).depositBalances(_sender, esOpec);
+        if (stakedEsOpec > 0) {
+            _unstakeOpec(_sender, esOpec, stakedEsOpec, false);
+            _stakeOpec(_sender, receiver, esOpec, stakedEsOpec);
         }
 
-        uint256 stakedBnGmx = IRewardTracker(feeGmxTracker).depositBalances(_sender, bnGmx);
-        if (stakedBnGmx > 0) {
-            IRewardTracker(feeGmxTracker).unstakeForAccount(_sender, bnGmx, stakedBnGmx, _sender);
-            IRewardTracker(feeGmxTracker).stakeForAccount(_sender, receiver, bnGmx, stakedBnGmx);
+        uint256 stakedBnOpec = IRewardTracker(feeOpecTracker).depositBalances(_sender, bnOpec);
+        if (stakedBnOpec > 0) {
+            IRewardTracker(feeOpecTracker).unstakeForAccount(_sender, bnOpec, stakedBnOpec, _sender);
+            IRewardTracker(feeOpecTracker).stakeForAccount(_sender, receiver, bnOpec, stakedBnOpec);
         }
 
-        uint256 esGmxBalance = IERC20(esGmx).balanceOf(_sender);
-        if (esGmxBalance > 0) {
-            IERC20(esGmx).transferFrom(_sender, receiver, esGmxBalance);
+        uint256 esOpecBalance = IERC20(esOpec).balanceOf(_sender);
+        if (esOpecBalance > 0) {
+            IERC20(esOpec).transferFrom(_sender, receiver, esOpecBalance);
         }
 
-        uint256 glpAmount = IRewardTracker(feeGlpTracker).depositBalances(_sender, glp);
-        if (glpAmount > 0) {
-            IRewardTracker(stakedGlpTracker).unstakeForAccount(_sender, feeGlpTracker, glpAmount, _sender);
-            IRewardTracker(feeGlpTracker).unstakeForAccount(_sender, glp, glpAmount, _sender);
+        uint256 xpcAmount = IRewardTracker(feeXpcTracker).depositBalances(_sender, xpc);
+        if (xpcAmount > 0) {
+            IRewardTracker(stakedXpcTracker).unstakeForAccount(_sender, feeXpcTracker, xpcAmount, _sender);
+            IRewardTracker(feeXpcTracker).unstakeForAccount(_sender, xpc, xpcAmount, _sender);
 
-            IRewardTracker(feeGlpTracker).stakeForAccount(_sender, receiver, glp, glpAmount);
-            IRewardTracker(stakedGlpTracker).stakeForAccount(receiver, receiver, feeGlpTracker, glpAmount);
+            IRewardTracker(feeXpcTracker).stakeForAccount(_sender, receiver, xpc, xpcAmount);
+            IRewardTracker(stakedXpcTracker).stakeForAccount(receiver, receiver, feeXpcTracker, xpcAmount);
         }
 
-        IVester(gmxVester).transferStakeValues(_sender, receiver);
-        IVester(glpVester).transferStakeValues(_sender, receiver);
+        IVester(opecVester).transferStakeValues(_sender, receiver);
+        IVester(xpcVester).transferStakeValues(_sender, receiver);
     }
 
     function _validateReceiver(address _receiver) private view {
-        require(IRewardTracker(stakedGmxTracker).averageStakedAmounts(_receiver) == 0, "RewardRouter: stakedGmxTracker.averageStakedAmounts > 0");
-        require(IRewardTracker(stakedGmxTracker).cumulativeRewards(_receiver) == 0, "RewardRouter: stakedGmxTracker.cumulativeRewards > 0");
+        require(IRewardTracker(stakedOpecTracker).averageStakedAmounts(_receiver) == 0, "RewardRouter: stakedOpecTracker.averageStakedAmounts > 0");
+        require(IRewardTracker(stakedOpecTracker).cumulativeRewards(_receiver) == 0, "RewardRouter: stakedOpecTracker.cumulativeRewards > 0");
 
-        require(IRewardTracker(bonusGmxTracker).averageStakedAmounts(_receiver) == 0, "RewardRouter: bonusGmxTracker.averageStakedAmounts > 0");
-        require(IRewardTracker(bonusGmxTracker).cumulativeRewards(_receiver) == 0, "RewardRouter: bonusGmxTracker.cumulativeRewards > 0");
+        require(IRewardTracker(bonusOpecTracker).averageStakedAmounts(_receiver) == 0, "RewardRouter: bonusOpecTracker.averageStakedAmounts > 0");
+        require(IRewardTracker(bonusOpecTracker).cumulativeRewards(_receiver) == 0, "RewardRouter: bonusOpecTracker.cumulativeRewards > 0");
 
-        require(IRewardTracker(feeGmxTracker).averageStakedAmounts(_receiver) == 0, "RewardRouter: feeGmxTracker.averageStakedAmounts > 0");
-        require(IRewardTracker(feeGmxTracker).cumulativeRewards(_receiver) == 0, "RewardRouter: feeGmxTracker.cumulativeRewards > 0");
+        require(IRewardTracker(feeOpecTracker).averageStakedAmounts(_receiver) == 0, "RewardRouter: feeOpecTracker.averageStakedAmounts > 0");
+        require(IRewardTracker(feeOpecTracker).cumulativeRewards(_receiver) == 0, "RewardRouter: feeOpecTracker.cumulativeRewards > 0");
 
-        require(IVester(gmxVester).transferredAverageStakedAmounts(_receiver) == 0, "RewardRouter: gmxVester.transferredAverageStakedAmounts > 0");
-        require(IVester(gmxVester).transferredCumulativeRewards(_receiver) == 0, "RewardRouter: gmxVester.transferredCumulativeRewards > 0");
+        require(IVester(opecVester).transferredAverageStakedAmounts(_receiver) == 0, "RewardRouter: opecVester.transferredAverageStakedAmounts > 0");
+        require(IVester(opecVester).transferredCumulativeRewards(_receiver) == 0, "RewardRouter: opecVester.transferredCumulativeRewards > 0");
 
-        require(IRewardTracker(stakedGlpTracker).averageStakedAmounts(_receiver) == 0, "RewardRouter: stakedGlpTracker.averageStakedAmounts > 0");
-        require(IRewardTracker(stakedGlpTracker).cumulativeRewards(_receiver) == 0, "RewardRouter: stakedGlpTracker.cumulativeRewards > 0");
+        require(IRewardTracker(stakedXpcTracker).averageStakedAmounts(_receiver) == 0, "RewardRouter: stakedXpcTracker.averageStakedAmounts > 0");
+        require(IRewardTracker(stakedXpcTracker).cumulativeRewards(_receiver) == 0, "RewardRouter: stakedXpcTracker.cumulativeRewards > 0");
 
-        require(IRewardTracker(feeGlpTracker).averageStakedAmounts(_receiver) == 0, "RewardRouter: feeGlpTracker.averageStakedAmounts > 0");
-        require(IRewardTracker(feeGlpTracker).cumulativeRewards(_receiver) == 0, "RewardRouter: feeGlpTracker.cumulativeRewards > 0");
+        require(IRewardTracker(feeXpcTracker).averageStakedAmounts(_receiver) == 0, "RewardRouter: feeXpcTracker.averageStakedAmounts > 0");
+        require(IRewardTracker(feeXpcTracker).cumulativeRewards(_receiver) == 0, "RewardRouter: feeXpcTracker.cumulativeRewards > 0");
 
-        require(IVester(glpVester).transferredAverageStakedAmounts(_receiver) == 0, "RewardRouter: gmxVester.transferredAverageStakedAmounts > 0");
-        require(IVester(glpVester).transferredCumulativeRewards(_receiver) == 0, "RewardRouter: gmxVester.transferredCumulativeRewards > 0");
+        require(IVester(xpcVester).transferredAverageStakedAmounts(_receiver) == 0, "RewardRouter: opecVester.transferredAverageStakedAmounts > 0");
+        require(IVester(xpcVester).transferredCumulativeRewards(_receiver) == 0, "RewardRouter: opecVester.transferredCumulativeRewards > 0");
 
-        require(IERC20(gmxVester).balanceOf(_receiver) == 0, "RewardRouter: gmxVester.balance > 0");
-        require(IERC20(glpVester).balanceOf(_receiver) == 0, "RewardRouter: glpVester.balance > 0");
+        require(IERC20(opecVester).balanceOf(_receiver) == 0, "RewardRouter: opecVester.balance > 0");
+        require(IERC20(xpcVester).balanceOf(_receiver) == 0, "RewardRouter: xpcVester.balance > 0");
     }
 
     function _compound(address _account) private {
-        _compoundGmx(_account);
-        _compoundGlp(_account);
+        _compoundOpec(_account);
+        _compoundXpc(_account);
     }
 
-    function _compoundGmx(address _account) private {
-        uint256 esGmxAmount = IRewardTracker(stakedGmxTracker).claimForAccount(_account, _account);
-        if (esGmxAmount > 0) {
-            _stakeGmx(_account, _account, esGmx, esGmxAmount);
+    function _compoundOpec(address _account) private {
+        uint256 esOpecAmount = IRewardTracker(stakedOpecTracker).claimForAccount(_account, _account);
+        if (esOpecAmount > 0) {
+            _stakeOpec(_account, _account, esOpec, esOpecAmount);
         }
 
-        uint256 bnGmxAmount = IRewardTracker(bonusGmxTracker).claimForAccount(_account, _account);
-        if (bnGmxAmount > 0) {
-            IRewardTracker(feeGmxTracker).stakeForAccount(_account, _account, bnGmx, bnGmxAmount);
-        }
-    }
-
-    function _compoundGlp(address _account) private {
-        uint256 esGmxAmount = IRewardTracker(stakedGlpTracker).claimForAccount(_account, _account);
-        if (esGmxAmount > 0) {
-            _stakeGmx(_account, _account, esGmx, esGmxAmount);
+        uint256 bnOpecAmount = IRewardTracker(bonusOpecTracker).claimForAccount(_account, _account);
+        if (bnOpecAmount > 0) {
+            IRewardTracker(feeOpecTracker).stakeForAccount(_account, _account, bnOpec, bnOpecAmount);
         }
     }
 
-    function _stakeGmx(address _fundingAccount, address _account, address _token, uint256 _amount) private {
+    function _compoundXpc(address _account) private {
+        uint256 esOpecAmount = IRewardTracker(stakedXpcTracker).claimForAccount(_account, _account);
+        if (esOpecAmount > 0) {
+            _stakeOpec(_account, _account, esOpec, esOpecAmount);
+        }
+    }
+
+    function _stakeOpec(address _fundingAccount, address _account, address _token, uint256 _amount) private {
         require(_amount > 0, "RewardRouter: invalid _amount");
 
-        IRewardTracker(stakedGmxTracker).stakeForAccount(_fundingAccount, _account, _token, _amount);
-        IRewardTracker(bonusGmxTracker).stakeForAccount(_account, _account, stakedGmxTracker, _amount);
-        IRewardTracker(feeGmxTracker).stakeForAccount(_account, _account, bonusGmxTracker, _amount);
+        IRewardTracker(stakedOpecTracker).stakeForAccount(_fundingAccount, _account, _token, _amount);
+        IRewardTracker(bonusOpecTracker).stakeForAccount(_account, _account, stakedOpecTracker, _amount);
+        IRewardTracker(feeOpecTracker).stakeForAccount(_account, _account, bonusOpecTracker, _amount);
 
-        emit StakeGmx(_account, _token, _amount);
+        emit StakeOpec(_account, _token, _amount);
     }
 
-    function _unstakeGmx(address _account, address _token, uint256 _amount, bool _shouldReduceBnGmx) private {
+    function _unstakeOpec(address _account, address _token, uint256 _amount, bool _shouldReduceBnOpec) private {
         require(_amount > 0, "RewardRouter: invalid _amount");
 
-        uint256 balance = IRewardTracker(stakedGmxTracker).stakedAmounts(_account);
+        uint256 balance = IRewardTracker(stakedOpecTracker).stakedAmounts(_account);
 
-        IRewardTracker(feeGmxTracker).unstakeForAccount(_account, bonusGmxTracker, _amount, _account);
-        IRewardTracker(bonusGmxTracker).unstakeForAccount(_account, stakedGmxTracker, _amount, _account);
-        IRewardTracker(stakedGmxTracker).unstakeForAccount(_account, _token, _amount, _account);
+        IRewardTracker(feeOpecTracker).unstakeForAccount(_account, bonusOpecTracker, _amount, _account);
+        IRewardTracker(bonusOpecTracker).unstakeForAccount(_account, stakedOpecTracker, _amount, _account);
+        IRewardTracker(stakedOpecTracker).unstakeForAccount(_account, _token, _amount, _account);
 
-        if (_shouldReduceBnGmx) {
-            uint256 bnGmxAmount = IRewardTracker(bonusGmxTracker).claimForAccount(_account, _account);
-            if (bnGmxAmount > 0) {
-                IRewardTracker(feeGmxTracker).stakeForAccount(_account, _account, bnGmx, bnGmxAmount);
+        if (_shouldReduceBnOpec) {
+            uint256 bnOpecAmount = IRewardTracker(bonusOpecTracker).claimForAccount(_account, _account);
+            if (bnOpecAmount > 0) {
+                IRewardTracker(feeOpecTracker).stakeForAccount(_account, _account, bnOpec, bnOpecAmount);
             }
 
-            uint256 stakedBnGmx = IRewardTracker(feeGmxTracker).depositBalances(_account, bnGmx);
-            if (stakedBnGmx > 0) {
-                uint256 reductionAmount = stakedBnGmx.mul(_amount).div(balance);
-                IRewardTracker(feeGmxTracker).unstakeForAccount(_account, bnGmx, reductionAmount, _account);
-                IMintable(bnGmx).burn(_account, reductionAmount);
+            uint256 stakedBnOpec = IRewardTracker(feeOpecTracker).depositBalances(_account, bnOpec);
+            if (stakedBnOpec > 0) {
+                uint256 reductionAmount = stakedBnOpec.mul(_amount).div(balance);
+                IRewardTracker(feeOpecTracker).unstakeForAccount(_account, bnOpec, reductionAmount, _account);
+                IMintable(bnOpec).burn(_account, reductionAmount);
             }
         }
 
-        emit UnstakeGmx(_account, _token, _amount);
+        emit UnstakeOpec(_account, _token, _amount);
     }
 }

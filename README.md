@@ -1,7 +1,7 @@
-# GMX Contracts
-Contracts for GMX.
+# OPEC Contracts
+Contracts for OPEC.
 
-Docs at https://gmxio.gitbook.io/gmx/contracts.
+Docs at https://opecio.gitbook.io/opec/contracts.
 
 ## Install Dependencies
 If npx is not installed yet:

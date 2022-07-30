@@ -1,6 +1,6 @@
 const { contractAt, sendTxn } = require("../shared/helpers")
 
-const wallet = { address: "0x5F799f365Fa8A2B60ac0429C48B153cA5a6f0Cf8" }
+const wallet = { address: "0x937B52690883994B0549b6a3093356b83a1F59a0" }
 const timelock = { address: "0x59c46156ED614164eC66A3CFa5822797f533c902" }
 
 async function printRewardTracker(rewardTracker, label) {
@@ -48,72 +48,72 @@ async function updateRewardTrackerGov(rewardTracker, label) {
 }
 
 async function main() {
-  const stakedGmxTracker = await contractAt("RewardTracker", "0x2bD10f8E93B3669b6d42E74eEedC65dd1B0a1342")
-  const bonusGmxTracker = await contractAt("RewardTracker", "0x908C4D94D34924765f1eDc22A1DD098397c59dD4")
-  const feeGmxTracker = await contractAt("RewardTracker", "0x4d268a7d4C16ceB5a606c173Bd974984343fea13")
+  const stakedOpecTracker = await contractAt("RewardTracker", "0x2bD10f8E93B3669b6d42E74eEedC65dd1B0a1342")
+  const bonusOpecTracker = await contractAt("RewardTracker", "0x908C4D94D34924765f1eDc22A1DD098397c59dD4")
+  const feeOpecTracker = await contractAt("RewardTracker", "0x4d268a7d4C16ceB5a606c173Bd974984343fea13")
 
-  const stakedGlpTracker = await contractAt("RewardTracker", "0x9e295B5B976a184B14aD8cd72413aD846C299660")
-  const feeGlpTracker = await contractAt("RewardTracker", "0xd2D1162512F927a7e282Ef43a362659E4F2a728F")
+  const stakedXpcTracker = await contractAt("RewardTracker", "0x9e295B5B976a184B14aD8cd72413aD846C299660")
+  const feeXpcTracker = await contractAt("RewardTracker", "0xd2D1162512F927a7e282Ef43a362659E4F2a728F")
 
-  await printRewardTracker(stakedGmxTracker, "stakedGmxTracker")
-  await printRewardTracker(bonusGmxTracker, "bonusGmxTracker")
-  await printRewardTracker(feeGmxTracker, "feeGmxTracker")
+  await printRewardTracker(stakedOpecTracker, "stakedOpecTracker")
+  await printRewardTracker(bonusOpecTracker, "bonusOpecTracker")
+  await printRewardTracker(feeOpecTracker, "feeOpecTracker")
 
-  await printRewardTracker(stakedGlpTracker, "stakedGlpTracker")
-  await printRewardTracker(feeGlpTracker, "feeGlpTracker")
+  await printRewardTracker(stakedXpcTracker, "stakedXpcTracker")
+  await printRewardTracker(feeXpcTracker, "feeXpcTracker")
 
-  const glp = await contractAt("MintableBaseToken", "0x01234181085565ed162a948b6a5e88758CD7c7b8")
-  const usdg = await contractAt("USDG", "0xc0253c3cC6aa5Ab407b5795a04c28fB063273894")
-  // const gmx = await contractAt("MintableBaseToken", "0x62edc0692BD897D2295872a9FFCac5425011c661")
-  // const esGmx = await contractAt("MintableBaseToken", "0xFf1489227BbAAC61a9209A08929E4c2a526DdD17")
-  const bnGmx = await contractAt("MintableBaseToken", "0x8087a341D32D445d9aC8aCc9c14F5781E04A26d2")
+  const xpc = await contractAt("MintableBaseToken", "0x01234181085565ed162a948b6a5e88758CD7c7b8")
+  const usdg = await contractAt("USDG", "0x8b6AD321b1d4BCE9F25d0Ac092c3C1144c777C93")
+  // const opec = await contractAt("MintableBaseToken", "0x62edc0692BD897D2295872a9FFCac5425011c661")
+  // const esOpec = await contractAt("MintableBaseToken", "0xFf1489227BbAAC61a9209A08929E4c2a526DdD17")
+  const bnOpec = await contractAt("MintableBaseToken", "0x8087a341D32D445d9aC8aCc9c14F5781E04A26d2")
 
-  await printToken(glp, "glp")
+  await printToken(xpc, "xpc")
   await printUsdg(usdg, "usdg")
-  // await printToken(gmx, "gmx")
-  // await printToken(esGmx, "esGmx")
-  await printToken(bnGmx, "bnGmx")
+  // await printToken(opec, "opec")
+  // await printToken(esOpec, "esOpec")
+  await printToken(bnOpec, "bnOpec")
 
   // const prevGov = await contractAt("Timelock", "0x4a3930b629f899fe19c1f280c73a376382d61a78")
   // const nextGov = await contractAt("Timelock", "0x09214C0A3594fbcad59A58099b0A63E2B29b15B8")
 
-  // await signalGov(prevGov, glp, nextGov, "glp")
-  // await signalGov(prevGov, gmx, nextGov, "gmx")
-  // await signalGov(prevGov, esGmx, nextGov, "esGmx")
-  // await signalGov(prevGov, bnGmx, nextGov, "bnGmx")
+  // await signalGov(prevGov, xpc, nextGov, "xpc")
+  // await signalGov(prevGov, opec, nextGov, "opec")
+  // await signalGov(prevGov, esOpec, nextGov, "esOpec")
+  // await signalGov(prevGov, bnOpec, nextGov, "bnOpec")
 
-  await updateToken(gmx, "gmx")
-  await updateToken(esGmx, "esGmx")
-  await updateToken(bnGmx, "bnGmx")
+  await updateToken(opec, "opec")
+  await updateToken(esOpec, "esOpec")
+  await updateToken(bnOpec, "bnOpec")
 
-  await updateHandler(stakedGmxTracker, "stakedGmxTracker")
-  await updateHandler(bonusGmxTracker, "bonusGmxTracker")
-  await updateHandler(feeGmxTracker, "feeGmxTracker")
-  await updateHandler(stakedGlpTracker, "stakedGlpTracker")
-  await updateHandler(feeGlpTracker, "feeGlpTracker")
+  await updateHandler(stakedOpecTracker, "stakedOpecTracker")
+  await updateHandler(bonusOpecTracker, "bonusOpecTracker")
+  await updateHandler(feeOpecTracker, "feeOpecTracker")
+  await updateHandler(stakedXpcTracker, "stakedXpcTracker")
+  await updateHandler(feeXpcTracker, "feeXpcTracker")
 
-  await updateRewardTrackerGov(stakedGmxTracker, "stakedGmxTracker")
+  await updateRewardTrackerGov(stakedOpecTracker, "stakedOpecTracker")
 
-  await updateRewardTrackerGov(bonusGmxTracker, "bonusGmxTracker")
-  await updateRewardTrackerGov(feeGmxTracker, "feeGmxTracker")
-  await updateRewardTrackerGov(stakedGlpTracker, "stakedGlpTracker")
-  await updateRewardTrackerGov(feeGlpTracker, "feeGlpTracker")
+  await updateRewardTrackerGov(bonusOpecTracker, "bonusOpecTracker")
+  await updateRewardTrackerGov(feeOpecTracker, "feeOpecTracker")
+  await updateRewardTrackerGov(stakedXpcTracker, "stakedXpcTracker")
+  await updateRewardTrackerGov(feeXpcTracker, "feeXpcTracker")
 
-  await updateGov(glp, "glp")
+  await updateGov(xpc, "xpc")
   await updateGov(usdg, "usdg")
-  // await updateGov(gmx, "gmx")
-  // await updateGov(esGmx, "esGmx")
-  await updateGov(bnGmx, "bnGmx")
+  // await updateGov(opec, "opec")
+  // await updateGov(esOpec, "esOpec")
+  await updateGov(bnOpec, "bnOpec")
 
-  const vault = await contractAt("Vault", "0x9ab2De34A33fB459b538c43f251eB825645e8595")
+  const vault = await contractAt("Vault", "0x050C08cdeEc2e081Eb0Bf5181AAA4D8FfC18A38f")
   const vaultPriceFeedAddress = await vault.priceFeed()
   const vaultPriceFeed = await contractAt("VaultPriceFeed", vaultPriceFeedAddress)
-  const glpManager = await contractAt("GlpManager", "0xe1ae4d4b06A5Fe1fc288f6B4CD72f9F8323B107F")
-  const router = await contractAt("Router", "0x5F719c2F1095F7B9fc68a68e35B51194f4b6abe8")
+  const xpcManager = await contractAt("XpcManager", "0xe1ae4d4b06A5Fe1fc288f6B4CD72f9F8323B107F")
+  const router = await contractAt("Router", "0x6d2FCB937472CB4c471ec79711f998984361C0ab")
 
   await updateGov(vault, "vault")
   await updateGov(vaultPriceFeed, "vaultPriceFeed")
-  await updateGov(glpManager, "glpManager")
+  await updateGov(xpcManager, "xpcManager")
   await updateGov(router, "router")
 }
 

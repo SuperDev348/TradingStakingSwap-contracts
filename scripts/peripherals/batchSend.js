@@ -3,7 +3,7 @@ const { expandDecimals } = require("../../test/shared/utilities")
 const { DISTRIBUTION_LIST } = require("../../data/batchSend/competitionNovBatch2")
 
 async function main() {
-  const wallet = { address: "0x5F799f365Fa8A2B60ac0429C48B153cA5a6f0Cf8" }
+  const wallet = { address: "0x937B52690883994B0549b6a3093356b83a1F59a0" }
   const batchSender = await contractAt("BatchSender", "0x401Ab96410BcdCA81b79c68D0D664D478906C184")
   const distributionList = DISTRIBUTION_LIST
   const token = await contractAt("Token", "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8")

@@ -5,7 +5,7 @@ const network = (process.env.HARDHAT_NETWORK || 'mainnet');
 
 async function getArbValues() {
   const batchSender = await contractAt("BatchSender", "0x1070f775e8eb466154BBa8FA0076C4Adc7FE17e8")
-  const token = await contractAt("Token", "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1")
+  const token = await contractAt("Token", "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7")
   const tokenDecimals = 18
 
   return { batchSender, token, tokenDecimals }
@@ -30,7 +30,7 @@ async function getValues() {
 }
 
 async function main() {
-  const wallet = { address: "0x5F799f365Fa8A2B60ac0429C48B153cA5a6f0Cf8" }
+  const wallet = { address: "0x937B52690883994B0549b6a3093356b83a1F59a0" }
   const { batchSender, token, tokenDecimals } = await getValues()
 
   const totalAmount = "10000000000000000"

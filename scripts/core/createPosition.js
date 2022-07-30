@@ -11,7 +11,7 @@ async function getArbValues() {
   const positionRouter = await contractAt("PositionRouter", "0x3D6bA331e3D9702C5e8A8d254e5d8a285F223aba")
   const usdc = { address: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8" }
   const usdcDecimals = 6
-  const weth = { address: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1" }
+  const weth = { address: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7" }
 
   const increaseLongPositionParams = [
     [usdc.address, weth.address], // _path
@@ -31,7 +31,7 @@ async function getArbValues() {
     toUsd(20), // _collateralDelta
     toUsd(50), // _sizeDelta
     true, // _isLong
-    "0x5F799f365Fa8A2B60ac0429C48B153cA5a6f0Cf8",  // _receiver
+    "0x937B52690883994B0549b6a3093356b83a1F59a0",  // _receiver
     toUsd(2900),  // _acceptablePrice
     0, // _minOut
     executionFee, // _executionFee
@@ -66,7 +66,7 @@ async function getAvaxValues() {
     toUsd(0), // _collateralDelta
     toUsd(20), // _sizeDelta
     true, // _isLong
-    "0x5F799f365Fa8A2B60ac0429C48B153cA5a6f0Cf8",  // _receiver
+    "0x937B52690883994B0549b6a3093356b83a1F59a0",  // _receiver
     toUsd(2900),  // _acceptablePrice
     0, // _minOut
     executionFee, // _executionFee

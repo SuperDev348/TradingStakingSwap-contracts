@@ -19,7 +19,7 @@ async function getArbValues(signer) {
 }
 
 async function getAvaxValues(signer) {
-  const vault = await contractAt("Vault", "0x9ab2De34A33fB459b538c43f251eB825645e8595")
+  const vault = await contractAt("Vault", "0x050C08cdeEc2e081Eb0Bf5181AAA4D8FfC18A38f")
   const timelock = await contractAt("Timelock", await vault.gov(), signer)
   const reader = await contractAt("Reader", "0x2eFEE1950ededC65De687b40Fd30a7B5f4544aBd")
 

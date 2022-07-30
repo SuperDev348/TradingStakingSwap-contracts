@@ -4,17 +4,17 @@ const { expandDecimals } = require("../../test/shared/utilities")
 const network = (process.env.HARDHAT_NETWORK || 'mainnet');
 
 async function getArbValues(signer) {
-  const rewardToken = await contractAt("Token", "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1", signer)
+  const rewardToken = await contractAt("Token", "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7", signer)
   const tokenDecimals = 18
 
   const rewardTrackerArr = [
     {
-      name: "feeGmxTracker",
+      name: "feeOpecTracker",
       address: "0xd2D1162512F927a7e282Ef43a362659E4F2a728F",
       transferAmount: "197"
     },
     {
-      name: "feeGlpTracker",
+      name: "feeXpcTracker",
       address: "0x4e971a87900b931fF39d1Aad67697F49835400b6",
       transferAmount: "173"
     }
@@ -29,12 +29,12 @@ async function getAvaxValues(signer) {
 
   const rewardTrackerArr = [
     {
-      name: "feeGmxTracker",
+      name: "feeOpecTracker",
       address: "0x4d268a7d4C16ceB5a606c173Bd974984343fea13",
       transferAmount: "962"
     },
     {
-      name: "feeGlpTracker",
+      name: "feeXpcTracker",
       address: "0xd2D1162512F927a7e282Ef43a362659E4F2a728F",
       transferAmount: "23130"
     }

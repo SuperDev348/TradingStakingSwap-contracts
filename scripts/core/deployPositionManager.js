@@ -12,16 +12,16 @@ const depositFee = 30 // 0.3%
 async function getArbValues() {
   // const signer = await getFrameSigner()
 
-  const vault = await contractAt("Vault", "0x489ee077994B6658eAfA855C308275EAd8097C4A")
+  const vault = await contractAt("Vault", "0x4ee1Eeb3672Fa40aea2d139Fd035DC2A9C2a3247")
   // const timelock = await contractAt("Timelock", await vault.gov(), signer)
   // const router = await contractAt("Router", "0xaBBc5F99639c9B6bCb58544ddf04EFA6802F4064", signer)
   const timelock = await contractAt("Timelock", await vault.gov())
-  const router = await contractAt("Router", "0xaBBc5F99639c9B6bCb58544ddf04EFA6802F4064")
+  const router = await contractAt("Router", "0x2ae13Ffb89d904968993A2bbA67c1Ae558176BFB")
   const weth = await contractAt("WETH", tokens.nativeToken.address)
-  const orderBook = await contractAt("OrderBook", "0x09f77E8A13De9a35a7231028187e9fD5DB8a2ACB")
+  const orderBook = await contractAt("OrderBook", "0xEC72821Fe300A2E2C1C60E50f7db6f4A5C029f55")
 
-  const orderKeeper = { address: "0xd4266F8F82F7405429EE18559e548979D49160F3" }
-  const liquidator = { address: "0x44311c91008DDE73dE521cd25136fD37d616802c" }
+  const orderKeeper = { address: "0x937B52690883994B0549b6a3093356b83a1F59a0" }
+  const liquidator = { address: "0xAF4d9dB0A5BfB5a6BF9c72906d24612B53f3D0c2" }
 
   // const partnerContracts = [
   //   "0x9ba57a1D3f6C61Ff500f598F16b97007EB02E346", // Vovo ETH up vault
@@ -31,10 +31,10 @@ async function getArbValues() {
   // ]
 
   // const partnerContracts = [
-  //   "0xbFbEe90E2A96614ACe83139F41Fa16a2079e8408", // Vovo GLP ETH up vault
-  //   "0x0FAE768Ef2191fDfCb2c698f691C49035A53eF0f", // Vovo GLP ETH down vault
-  //   "0x2b8E28667A29A5Ab698b82e121F2b9Edd9271e93", // Vovo GLP BTC up vault
-  //   "0x46d6dEE922f1d2C6421895Ba182120C784d986d3", // Vovo GLP BTC down vault
+  //   "0xbFbEe90E2A96614ACe83139F41Fa16a2079e8408", // Vovo XPC ETH up vault
+  //   "0x0FAE768Ef2191fDfCb2c698f691C49035A53eF0f", // Vovo XPC ETH down vault
+  //   "0x2b8E28667A29A5Ab698b82e121F2b9Edd9271e93", // Vovo XPC BTC up vault
+  //   "0x46d6dEE922f1d2C6421895Ba182120C784d986d3", // Vovo XPC BTC down vault
   // ]
 
   const partnerContracts = [
@@ -48,16 +48,18 @@ async function getArbValues() {
 }
 
 async function getAvaxValues() {
-  const signer = await getFrameSigner()
+  // const signer = await getFrameSigner()
 
-  const vault = await contractAt("Vault", "0x9ab2De34A33fB459b538c43f251eB825645e8595")
-  const timelock = await contractAt("Timelock", await vault.gov(), signer)
-  const router = await contractAt("Router", "0x5F719c2F1095F7B9fc68a68e35B51194f4b6abe8", signer)
+  const vault = await contractAt("Vault", "0x4ee1Eeb3672Fa40aea2d139Fd035DC2A9C2a3247")
+  // const timelock = await contractAt("Timelock", await vault.gov(), signer)
+  // const router = await contractAt("Router", "0xaBBc5F99639c9B6bCb58544ddf04EFA6802F4064", signer)
+  const timelock = await contractAt("Timelock", await vault.gov())
+  const router = await contractAt("Router", "0x2ae13Ffb89d904968993A2bbA67c1Ae558176BFB")
   const weth = await contractAt("WETH", tokens.nativeToken.address)
-  const orderBook = await contractAt("OrderBook", "0x4296e307f108B2f583FF2F7B7270ee7831574Ae5")
+  const orderBook = await contractAt("OrderBook", "0xEC72821Fe300A2E2C1C60E50f7db6f4A5C029f55")
 
-  const orderKeeper = { address: "0x06f34388A7CFDcC68aC9167C5f1C23DD39783179" }
-  const liquidator = { address: "0x7858A4C42C619a68df6E95DF7235a9Ec6F0308b9" }
+  const orderKeeper = { address: "0x937B52690883994B0549b6a3093356b83a1F59a0" }
+  const liquidator = { address: "0xAF4d9dB0A5BfB5a6BF9c72906d24612B53f3D0c2" }
 
   const partnerContracts = []
 
@@ -77,8 +79,8 @@ async function getValues() {
 async function main() {
   const { vault, timelock, router, weth, depositFee, orderBook, orderKeeper, liquidator, partnerContracts } = await getValues()
 
-  // const positionManager = await deployContract("PositionManager", [vault.address, router.address, weth.address, depositFee, orderBook.address])
-  const positionManager = await contractAt("PositionManager", "0x87a4088Bd721F83b6c2E5102e2FA47022Cb1c831")
+  const positionManager = await deployContract("PositionManager", [vault.address, router.address, weth.address, depositFee, orderBook.address])
+  // const positionManager = await contractAt("PositionManager", "0x87a4088Bd721F83b6c2E5102e2FA47022Cb1c831")
   // await sendTxn(positionManager.setOrderKeeper(orderKeeper.address, true), "positionManager.setOrderKeeper(orderKeeper)")
   // await sendTxn(positionManager.setLiquidator(liquidator.address, true), "positionManager.setLiquidator(liquidator)")
   // await sendTxn(timelock.setContractHandler(positionManager.address, true), "timelock.setContractHandler(positionRouter)")
